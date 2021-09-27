@@ -1,0 +1,210 @@
+package TollData;
+
+//	Vehicle class:
+//	 Has data members – regno (registration number) with appropriate  type
+//	 Has following public members:
+//	o	public Vehicle (String regno) 
+//	o	public String getRegno() 
+//	o	public abstract float calcTax(String road, String journey) throws RoadException9
+
+class RoadException extends Exception {
+	
+
+	public RoadException() {
+		super("RoadException Occured");
+		
+	}
+}
+
+abstract class Vehicle {
+
+	private String regno;
+
+	public String getRegno() {
+		return regno;
+	}
+
+//	public void setRegno(String regno) {
+//		this.regno = regno;
+//	}
+
+	public Vehicle(String regno) {
+		this.regno = regno;
+	}
+
+	public abstract float calcTax(String road, String journey) throws RoadException;
+
+}
+//	•	PrivateVehicle class:
+//		Derived from Vehicle overriding the calcTax method with following logic
+//		If the road parameter value is NATIONAL, STATE or LOCAL and 
+//	    the journey parameter value is SINGLE, the tax amount is 90, 60 or 30 
+//	    respectively. If the journey parameter value is RETURN then increase 
+//		the tax by 50%. If the road or journey parameters have any other value, 
+//		throw a custom exception – RoadException with appropriate messsage  
+
+class PrivateVehicle extends Vehicle {
+
+	public PrivateVehicle(String regno) {
+		super(regno);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public float calcTax(String road, String journey) throws RoadException {
+
+		int tax = 0;
+		if (journey.equalsIgnoreCase("SINGLE")) {
+			if (road.equalsIgnoreCase("NATIONAL")) {
+				tax = 90;
+			} else if (road.equalsIgnoreCase("STATE")) {
+				tax = 60;
+			} else if (road.equalsIgnoreCase("LOCAL")) {
+				tax = 30;
+			}
+		} else if (journey.equalsIgnoreCase("RETURN")) {
+			if (road.equalsIgnoreCase("NATIONAL")) {
+				tax = 90 + (90 * 50 / 100);
+			} else if (road.equalsIgnoreCase("STATE")) {
+				tax = 60 + (60 * 50 / 100);
+			} else if (road.equalsIgnoreCase("LOCAL")) {
+				tax = 30 + (30 * 50 / 100);
+			}
+		}
+		return tax;
+	}
+}
+
+//	•	CommercialVehicle class:
+//		Derived from Vehicle overriding the calcTax method with following logic
+//		If the road parameter value is NATIONAL, STATE or LOCAL and the 
+//		journey parameter value is SINGLE, the tax amount is 150, 100 or 50 
+//		respectively. If the journey parameter value is RETURN then increase 
+//		the tax by 75%. If the road or journey parameters have any other value, 
+//		throw a custom exception – RoadException with appropriate messsage  
+
+class CommercialVehicle extends Vehicle {
+
+	public CommercialVehicle(String regno) {
+		super(regno);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public float calcTax(String road, String journey) throws RoadException {
+
+		int tax = 0;
+		if (journey.equalsIgnoreCase("SINGLE")) {
+			if (road.equalsIgnoreCase("NATIONAL")) {
+				tax = 150;
+			} else if (road.equalsIgnoreCase("STATE")) {
+				tax = 100;
+			} else if (road.equalsIgnoreCase("LOCAL")) {
+				tax = 50;
+			}
+		} else if (journey.equalsIgnoreCase("RETURN")) {
+			if (road.equalsIgnoreCase("NATIONAL")) {
+				tax = 150 + (150 * 75 / 100);
+			} else if (road.equalsIgnoreCase("STATE")) {
+				tax = 100 + (100 * 75 / 100);
+			} else if (road.equalsIgnoreCase("LOCAL")) {
+				tax = 50 + (50 * 75 / 100);
+			}
+		}
+		return tax;
+	}
+}
+
+//			TollData class:
+//			Has data members – privateCount, privateAmount, commercialCount, commercialAmount with appropriate types
+//			Has following public members:
+//			o	public float makeEntry(Vehicle v, String road, String journey) throws RoadException
+//			Calculates and returns the tax amount based upon the runtime type of Vehicle. Also, internally 
+//			updates the count of private or commercial vehicles passed so far and their cumulative 
+//			tax amount collected in data members
+//			o	public int getPrivateCount() - Returns the count of private vehicles passed
+//			o	public float getPrivateAmount() - Returns the total tax amount collected from private vehicles so far
+//			o	public int getCommercialCount() - Returns the count of commercial vehicles passed
+//			o	public float getCommercialAmount() - Returns the total tax amount collected from commercial vehicles so far
+//			o	public static void main(String[] args) – Has code to test the functionality as below
+
+public class TollData {
+	private int privateCount = 0;
+	private float privateAmount = 0;
+	private int commercialCount = 0;
+	private float commercialAmount = 0;
+
+	public float makeEntry(Vehicle v, String road, String journey) throws RoadException {
+		float n = 0;
+		if (v instanceof PrivateVehicle) {
+			PrivateVehicle p = new PrivateVehicle(v.getRegno());
+			n = p.calcTax(road, journey);
+			privateAmount += n;
+			privateCount++;
+		}
+
+		else if (v instanceof CommercialVehicle) {
+			CommercialVehicle c = new CommercialVehicle(v.getRegno());
+			n = c.calcTax(road, journey);
+			commercialAmount += n;
+			commercialCount++;
+		}
+		return n;
+	}
+
+	// Getter methods
+	public int getPrivateCount() {
+		return privateCount;
+	}
+
+//	public void setPrivateCount(int privateCount) {
+//		this.privateCount = privateCount;
+//	}
+	public float getPrivateAmount() {
+		return privateAmount;
+	}
+
+//	public void setPrivateAmount(float privateAmount) {
+//		this.privateAmount = privateAmount;
+//	}
+	public int getCommercialCount() {
+		return commercialCount;
+	}
+
+//	public void setCommercialCount(int commercialCount) {
+//		this.commercialCount = commercialCount;
+//	}
+	public float getCommercialAmount() {
+		return commercialAmount;
+	}
+//	public void setCommercialAmount(float commercialAmount) {
+//		this.commercialAmount = commercialAmount;
+//	}
+
+	public static void main(String[] args) {
+		PrivateVehicle pv = new PrivateVehicle("MH01C1111");
+		CommercialVehicle cv = new CommercialVehicle("MH02C2222");
+
+		TollData td = new TollData();
+
+		float pvtax, cvtax/*pvtax1, cvtax1*/;
+		
+		try {
+			pvtax = td.makeEntry(pv, "NATIONAL", "SINGLE");
+			System.out.println(pvtax);
+			cvtax = td.makeEntry(cv, "NATIONAL", "RETURN");
+			System.out.println(cvtax);
+//			pvtax1 = td.makeEntry(pv, "NATIONAL", "SINGLE");
+//			System.out.println(pvtax);
+//			cvtax1 = td.makeEntry(cv, "NATIONAL", "RETURN");
+//			System.out.println(cvtax);
+
+		} catch (RoadException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("Private Vehicle data" + td.getPrivateCount() + ":" + td.getPrivateAmount());
+		System.out.println("Commercial Vehicle data" + td.getCommercialCount() + ":" + td.getCommercialAmount());
+
+	}
+}
